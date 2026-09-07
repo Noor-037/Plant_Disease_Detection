@@ -1,0 +1,194 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plant Disease Detector</title>
+   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<h2>🌿 Plant Disease Detector</h2>
+<p class="subtitle">AI-powered disease detection &amp; pesticide recommendation</p>
+
+<div class="card">
+  <label for="plant_type">Plant Type <span class="optional-tag">(optional — leave as "Not specified" if unsure)</span></label>
+  <select id="plant_type">
+    <option value="">Not specified</option>
+    <option>Tomato</option>
+    <option>Wheat</option>
+    <option>Cotton</option>
+    <option>Rice</option>
+    <option>Sugarcane</option>
+    <option>Other</option>
+  </select>
+
+  <label for="image">Capture / Upload Leaf Photo</label>
+  <input type="file" id="image" accept="image/*" capture="environment">
+
+  <img id="preview" alt="preview">
+
+  <button id="analyzeBtn" onclick="startAnalysis()">Detect Disease</button>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0;">Result</h3>
+  <div class="status-row"><span>Status</span><span id="stateBadge" class="badge idle">idle</span></div>
+  <div class="status-row"><span>Plant</span><span id="plant">-</span></div>
+  <div class="status-row"><span>Disease</span><span id="disease">-</span></div>
+  <div class="status-row"><span>Confidence</span><span id="confidence">-</span></div>
+  <div class="status-row"><span>Severity</span><span id="severityBadge" class="badge sev-None">-</span></div>
+  <div class="status-row"><span>Recommended Pesticide</span><span id="pesticide">-</span></div>
+  <div class="status-row"><span>Recommended Amount</span><span id="dosage_ml">-</span></div>
+
+  <ol id="steps" class="steps"></ol>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0;">Recent Scans</h3>
+  <div id="historyList"><span id="historyEmpty">No scans yet.</span></div>
+</div>
+
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plant Disease Detector</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<h2>🌿 Plant Disease Detector</h2>
+<p class="subtitle">AI-powered disease detection &amp; pesticide recommendation</p>
+
+<div class="card">
+  <label for="plant_type">Plant Type <span class="optional-tag">(optional — leave as "Not specified" if unsure)</span></label>
+  <select id="plant_type">
+    <option value="">Not specified</option>
+    <option>Tomato</option>
+    <option>Wheat</option>
+    <option>Cotton</option>
+    <option>Rice</option>
+    <option>Sugarcane</option>
+    <option>Other</option>
+  </select>
+
+  <!-- <label>Leaf Photo</label> -->
+   <label>Capture / Upload Leaf Photo</label>
+
+<div class="capture-options">
+
+    <button
+        type="button"
+        id="cameraBtn"
+        class="option-btn camera-btn"
+        onclick="openCamera()">
+        <span class="icon">📷</span>
+        Capture Photo
+    </button>
+
+    <label
+        for="image"
+        class="option-btn upload-btn">
+        <span class="icon">🖼️</span>
+        Upload from Device
+    </label>
+
+    <input
+        type="file"
+        id="image"
+        accept="image/*"
+        style="display:none;">
+
+</div>
+
+<div
+    id="cameraView"
+    class="camera-view"
+    style="display:none;">
+
+    <video
+        id="video"
+        autoplay
+        playsinline>
+    </video>
+
+    <div class="camera-controls">
+
+        <button
+            type="button"
+            class="snap-btn"
+            onclick="takeSnapshot()">
+            Take Photo
+        </button>
+
+        <button
+            type="button"
+            class="cancel-btn"
+            onclick="closeCamera()">
+            Cancel
+        </button>
+
+    </div>
+
+</div>
+
+<canvas
+    id="canvas"
+    style="display:none;">
+</canvas>
+
+<img id="preview" alt="preview">
+
+  <!-- <div class="capture-options">
+    <button type="button" id="cameraBtn" class="option-btn camera-btn" onclick="openCamera()">
+      <span class="icon">📷</span> Capture Photo
+    </button>
+    <label for="image" class="option-btn upload-btn">
+      <span class="icon">🖼️</span> Upload from Device
+    </label>
+    <input type="file" id="image" accept="image/*" style="display:none;">
+  </div> -->
+
+  <!-- Live camera view (hidden until "Capture Photo" is tapped) -->
+  <div id="cameraView" class="camera-view" style="display:none;">
+    <video id="video" autoplay playsinline></video>
+    <div class="camera-controls">
+      <button type="button" class="snap-btn" onclick="takeSnapshot()">Take Photo</button>
+      <button type="button" class="cancel-btn" onclick="closeCamera()">Cancel</button>
+    </div>
+  </div>
+  <canvas id="canvas" style="display:none;"></canvas>
+
+  <img id="preview" alt="preview">
+
+  <button id="analyzeBtn" onclick="startAnalysis()">Detect Disease</button>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0;">Result</h3>
+  <div class="status-row"><span>Status</span><span id="stateBadge" class="badge idle">idle</span></div>
+  <div class="status-row"><span>Plant</span><span id="plant">-</span></div>
+  <div class="status-row"><span>Disease</span><span id="disease">-</span></div>
+  <div class="status-row"><span>Confidence</span><span id="confidence">-</span></div>
+  <div class="status-row"><span>Severity</span><span id="severityBadge" class="badge sev-None">-</span></div>
+  <div class="status-row"><span>Recommended Pesticide</span><span id="pesticide">-</span></div>
+  <div class="status-row"><span>Recommended Amount</span><span id="dosage_ml">-</span></div>
+
+  <ol id="steps" class="steps"></ol>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0;">Recent Scans</h3>
+  <div id="historyList"><span id="historyEmpty">No scans yet.</span></div>
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
