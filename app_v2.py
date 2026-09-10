@@ -73,7 +73,7 @@ def analyze_leaf_colors(image_path: str, sample_size=200):
     leaf_ratio = green_pct + (yellow_pct * 0.5) + (brown_pct * 0.3) + (white_pct * 0.2)
 
     return {
-        "is_leaf": leaf_ratio >= 12.0,  # Strict threshold to reject humans, rooms, objects
+        "is_leaf": leaf_ratio >= 22.0,  # Strict threshold to reject humans, rooms, objects
         "green_pct": round(green_pct, 1),
         "yellow_pct": round(yellow_pct, 1),
         "brown_pct": round(brown_pct, 1),
